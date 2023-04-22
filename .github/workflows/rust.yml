@@ -30,3 +30,6 @@ jobs:
         files: target/release/mrfetch 
         # Git tag
         automatic_release_tag: AUTO
+        # Prerelease
+        prerelease: false
+        
