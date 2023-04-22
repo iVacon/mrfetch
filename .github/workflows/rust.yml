@@ -16,10 +16,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Build
-      run: cargo build --verbose
-    
-    - uses: actions/checkout@v3
     - name: Build release
       run: cargo build --release --verbose
       
@@ -32,3 +28,5 @@ jobs:
         title: Automatic release
         # Assets to upload to the release
         files: target/release/mrfetch 
+        # Git tag
+        automatic_release_tag: AUTO
