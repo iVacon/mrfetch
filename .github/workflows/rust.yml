@@ -31,5 +31,5 @@ jobs:
         # Git tag
         automatic_release_tag: AUTO
         # Prerelease
-        prerelease: false
+        prerelease: true
         
