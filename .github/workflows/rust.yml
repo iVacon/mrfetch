@@ -22,3 +22,13 @@ jobs:
     - uses: actions/checkout@v3
     - name: Build release
       run: cargo build --release --verbose
+      
+    - name: Automatic Releases
+      uses: marvinpinto/action-automatic-releases@v1.2.1
+      with:
+        # GitHub secret token
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        # Release title (for automatic releases)
+        title: Automatic release
+        # Assets to upload to the release
+        files: target/release/mrfetch 
