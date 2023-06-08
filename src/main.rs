@@ -45,10 +45,12 @@ fn main() {
     let figlet = Command::new("figlet")
         .args(["-f", "smslant", &distro_name.clone()])
         .output();
-    
-    let figlet = figlet.unwrap();
-    let figlet = String::from_utf8_lossy(&figlet.stdout);
 
+    if figlet.is_err() == false {
+        let figlet = figlet.unwrap();
+        let figlet = String::from_utf8_lossy(&figlet.stdout);
+        print!("{}", figlet);
+    }
     // Print all the things we've been saving.
     print!("{}", figlet);
     println!("{}@{}", user.clone().trim(), hostname.clone().trim());
