@@ -1,6 +1,8 @@
 
 # mrfetch
 ![GitHub](https://img.shields.io/github/license/iVacon/mrfetch?style=flat-square) ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/iVacon/mrfetch/rust.yml?style=flat-square) ![GitHub top language](https://img.shields.io/github/languages/top/iVacon/mrfetch?style=flat-square)
+
+
 This is the repository for ``mrfetch``. ``mrfetch`` is a fetch utility created by iVacon as a nitch-inspired hobby project made in Rust. The ``mrfetch`` tool is in no way, shape, or form, endorsed by the Rust Foundation or Project. Disclaimers aside, this started as nothing more but a personal hobby project for me (iVacon) to practice Rust with. I don't expect this to get popular, and definitely not to replace nitch. Those projects are far, far greater and bigger and made by way smarter people.
 
 # Install guide
