@@ -52,7 +52,6 @@ fn main() {
         print!("{}", figlet);
     }
     // Print all the things we've been saving.
-    print!("{}", figlet);
     println!("{}@{}", user.clone().trim(), hostname.clone().trim());
     println!("------------------------");
     println!("OS: {}", Red.paint(distro_name.clone()));
