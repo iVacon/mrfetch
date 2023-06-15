@@ -53,8 +53,8 @@ fn main() {
     }
     // Print all the things we've been saving.
     println!("{}@{}", user.clone().trim(), hostname.clone().trim());
-    println!("------------------------");
-    println!("OS: {}", Red.paint(distro_name.clone()));
+    println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    println!("┐ OS: {}", Red.paint(distro_name.clone()));
 
     // Free up RAM
     drop(release_distro);
@@ -68,7 +68,7 @@ fn main() {
 
     let kernel = String::from_utf8_lossy(&kernel.stdout);
 
-    println!("Kernel: {}", Yellow.paint(kernel.trim()));
+    println!("│ Kernel: {}", Yellow.paint(kernel.trim()));
 
     // Read memfile
     if let Ok(file) = File::open("/proc/meminfo") {
@@ -110,7 +110,7 @@ fn main() {
 
         ramused = ramtotal - ramavail;
 
-        println!("Mem: {}/{} GB ({} GB Available)", Green.paint(ramused.to_string()), Green.paint(ramtotal.to_string()), Green.paint(ramavail.to_string()));
+        println!("│ Mem: {}/{} GB ({} GB Available)", Green.paint(ramused.to_string()), Green.paint(ramtotal.to_string()), Green.paint(ramavail.to_string()));
 
         // Read Uptime
 
@@ -121,14 +121,14 @@ fn main() {
         let mut uptime = String::from_utf8_lossy(&uptime.stdout).trim().to_string();
         uptime = uptime.split_whitespace().nth(2).unwrap_or("").to_string();
         uptime = uptime[0..uptime.len() - 1].to_string();
-        println!("Uptime: {} (H:MM)", Blue.paint(uptime));
+        println!("│ Uptime: {} (H:MM)", Blue.paint(uptime));
     } else {
         panic!("Cannot find /proc/meminfo");
     }
     
     // Get shell
     let shell = env::var("SHELL").expect("Could not read $SHELL variable");
-    println!("Shell: {}", Cyan.paint(shell));
+    println!("│ Shell: {}", Cyan.paint(shell));
 
     // Time for a challenge, Get CPU model!
     {
@@ -151,6 +151,11 @@ fn main() {
             model = line.split(":").nth(1).expect("Failed to parse CPU Info").trim().to_string();   
         }
 
-        println!("CPU: {}", Purple.paint(model));
+        println!("┘ CPU: {}", Purple.paint(model));
+
     }
+
+    // Colours
+    println!("");
+    println!("{} {} {} {} {} {}", Red.paint("◆"), Green.paint("◆"), Yellow.paint("◆"), Blue.paint("◆"), Purple.paint("◆"), Cyan.paint("◆"));
 }
