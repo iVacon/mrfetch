@@ -14,7 +14,7 @@ fn main() {
     let user = String::from_utf8_lossy(&user.stdout);
 
     let hostname = Command::new("uname")
-        .args(&["-n"])
+        .args(["-n"])
         .output()
         .expect("Failed to get hostname");
 
@@ -38,18 +38,17 @@ fn main() {
     }
 
     // Release file processing, huge credit to ChatGPT for this one!
-    let mut distro_name: String = (&release_distro[5..release_distro.len() - 1]).to_string();
-    distro_name = distro_name.replace("\"", "");
+    let mut distro_name: String = release_distro[5..release_distro.len() - 1].to_string();
+    distro_name = distro_name.replace('\"', "");
     // println!("OS: {}", Red.paint(distro_name.clone()));
     
     let figlet = Command::new("figlet")
-        .args(["-f", "smslant", &distro_name.clone()])
+        .args(["-f", "smslant", &distro_name])
         .output();
 
-    if figlet.is_err() == false {
-        let figlet = figlet.unwrap();
-        let figlet = String::from_utf8_lossy(&figlet.stdout);
-        print!("{}", figlet);
+    if let Ok(output) = figlet {
+        let output = String::from_utf8_lossy(&output.stdout);
+        print!("{}", output);
     }
     // Print all the things we've been saving.
     println!("{}@{}", user.clone().trim(), hostname.clone().trim());
@@ -79,7 +78,6 @@ fn main() {
         // Vars
         let mut ramtotal: u32 = 0;
         let mut ramavail: u32 = 0;
-        let mut ramused: u32 = 0;
         
         // Read 1st & 2nd line
         if let Some(Ok(line)) = lines.next() {
@@ -89,7 +87,7 @@ fn main() {
                 line_processed = &line_processed[0..line_processed.len() - 3];
                 // mafs
                 let mut ram_gb: u32 = line_processed.parse().unwrap();
-                ram_gb = ram_gb / 1048576;
+                ram_gb /= 1048576;
                 ramtotal = ram_gb;
             }
         }
@@ -103,12 +101,12 @@ fn main() {
                 line_processed = &line_processed[0..line_processed.len() - 3];
                 // mafs
                 let mut ram_gb: u32 = line_processed.parse().unwrap();
-                ram_gb = ram_gb / 1048576;
+                ram_gb /= 1048576;
                 ramavail = ram_gb;
             }
         }
 
-        ramused = ramtotal - ramavail;
+        let ramused = ramtotal - ramavail;
 
         println!("│ Mem: {}/{} GB ({} GB Available)", Green.paint(ramused.to_string()), Green.paint(ramtotal.to_string()), Green.paint(ramavail.to_string()));
 
@@ -140,15 +138,14 @@ fn main() {
         let mut i = 1;
         while i < 5 {
             lines.next();
-            i = i + 1;
+            i += 1;
 
         }
 
-        drop(i);
         let mut model: String = String::new();
 
         if let Some(Ok(line)) = lines.next() {
-            model = line.split(":").nth(1).expect("Failed to parse CPU Info").trim().to_string();   
+            model = line.split(':').nth(1).expect("Failed to parse CPU Info").trim().to_string();
         }
 
         println!("┘ CPU: {}", Purple.paint(model));
@@ -156,6 +153,5 @@ fn main() {
     }
 
     // Colours
-    println!("");
-    println!("{} {} {} {} {} {}", Red.paint("◆"), Green.paint("◆"), Yellow.paint("◆"), Blue.paint("◆"), Purple.paint("◆"), Cyan.paint("◆"));
+    println!("\n{} {} {} {} {} {}", Red.paint("◆"), Green.paint("◆"), Yellow.paint("◆"), Blue.paint("◆"), Purple.paint("◆"), Cyan.paint("◆"));
 }
