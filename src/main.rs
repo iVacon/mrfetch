@@ -7,27 +7,26 @@ use std::env;
 fn main() {
 
     // User & hostname
-    let user = Command::new("whoami")
-        .output()
-        .expect("Failed to get user");
-
-    let user = String::from_utf8_lossy(&user.stdout);
-
-    let hostname = Command::new("uname")
-        .args(["-n"])
-        .output()
-        .expect("Failed to get hostname");
-
-    let hostname = String::from_utf8_lossy(&hostname.stdout);
-
-    // Don't print user and hostname just yet.
-
-    // println!("{}@{}", user.trim(), hostname.trim());
-    // println!("══════════════════════════════════");
-
-    // drop(user);
-    //drop(hostname);
+    // let user = Command::new("whoami")
+    //     .output()
+    //     .expect("Failed to get user");
     
+    // let user = String::from_utf8_lossy(&user.stdout);
+
+    // let hostname = Command::new("uname")
+    //     .args(["-n"])
+    //     .output()
+    //     .expect("Failed to get hostname");
+
+   // let hostname = String::from_utf8_lossy(&hostname.stdout);
+    let user = env::var("USER");
+    
+    let mut hostname = String::new();
+    {
+        let hostname_file = File::open("/etc/hostname").expect("u forgor the /etc/hostname file u arch-using moronbox");
+        let mut hostname_reader = BufReader::new(hostname_file);
+        hostname_reader.read_line(&mut hostname).expect("Failed string conversion... EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+    }
     
     // Read release file, AKA get OS name
     let mut release_distro = String::new();
@@ -38,36 +37,38 @@ fn main() {
     }
 
     // Release file processing, huge credit to ChatGPT for this one!
-    let mut distro_name: String = release_distro[5..release_distro.len() - 1].to_string();
-    distro_name = distro_name.replace('\"', "");
+   let mut distro_name: String = release_distro[5..release_distro.len() - 1].to_string();
+   distro_name = distro_name.replace('\"', "");
     // println!("OS: {}", Red.paint(distro_name.clone()));
     
     let figlet = Command::new("figlet")
         .args(["-f", "smslant", &distro_name])
         .output();
 
-    if let Ok(output) = figlet {
+   if let Ok(output) = figlet {
         let output = String::from_utf8_lossy(&output.stdout);
         print!("{}", output);
-    }
+   }
     // Print all the things we've been saving.
-    println!("{}@{}", user.clone().trim(), hostname.clone().trim());
+    println!("{}@{}", user.unwrap(), hostname);
     println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-    println!("┐ OS: {}", Red.paint(distro_name.clone()));
+    println!("┐ OS: {}", Red.paint(distro_name));
 
-    // Free up RAM
-    drop(release_distro);
-    drop(distro_name);
+    // I know it's terrible, but it works.
+    let mut kernel = String::new();
+    {
+        let kernel_file = File::open("/proc/version").expect("do u even linux bro???");
+        let mut kernel_reader = BufReader::new(kernel_file);
+        kernel_reader.read_line(&mut kernel).expect("Failed string conversion");
+    }
 
-    // Kernel Version
-    let kernel = Command::new("uname")
-        .arg("-r")
-        .output()
-        .expect("Couldn't get kernel version!");
+    let mut kernel_name: String = (kernel[14..kernel.len()]).to_string();
+    kernel_name = kernel_name.split_whitespace()
+        .next()
+        .unwrap()
+        .to_string();
 
-    let kernel = String::from_utf8_lossy(&kernel.stdout);
-
-    println!("│ Kernel: {}", Yellow.paint(kernel.trim()));
+    println!("│ Kernel: {}", Yellow.paint(kernel_name.trim()));
 
     // Read memfile
     if let Ok(file) = File::open("/proc/meminfo") {
@@ -109,19 +110,26 @@ fn main() {
         let ramused = ramtotal - ramavail;
 
         println!("│ Mem: {}/{} GB ({} GB Available)", Green.paint(ramused.to_string()), Green.paint(ramtotal.to_string()), Green.paint(ramavail.to_string()));
+ 
+    }
+    
+    {
+        // This took me unusually long.
 
-        // Read Uptime
+        // Generic file stuff
+        let mut uptime = String::new();
+        let uptime_file = File::open("/proc/uptime").expect(":skull:");
+        let mut uptime_reader = BufReader::new(uptime_file);
+        uptime_reader.read_line(&mut uptime).expect("what");
+        let mut iterator = uptime.split_whitespace();
+        uptime = iterator.next().expect("*screeches at the top of his lungs*").to_string();
 
-        let uptime = Command::new("uptime")
-            .output()
-            .expect("Failed to get uptime");
+        // was never expecting rounding to be this difficult
+        let uptimeint = uptime.parse::<f32>();
+        let roundeduptimeint: u32 = uptimeint.expect("phoque").round() as u32; 
+        let uptimemins: u32 = roundeduptimeint / 60;
+        println!("│ Uptime: {} minutes", Blue.paint(uptimemins.to_string()))
 
-        let mut uptime = String::from_utf8_lossy(&uptime.stdout).trim().to_string();
-        uptime = uptime.split_whitespace().nth(2).unwrap_or("").to_string();
-        uptime = uptime[0..uptime.len() - 1].to_string();
-        println!("│ Uptime: {} (H:MM)", Blue.paint(uptime));
-    } else {
-        panic!("Cannot find /proc/meminfo");
     }
     
     // Get shell
@@ -142,10 +150,18 @@ fn main() {
 
         }
 
+<<<<<<< HEAD
+        
+        let mut model: String = String::new();
+
+        if let Some(Ok(line)) = lines.next() {
+            model = line.split(':').nth(1).expect("Failed to parse CPU Info").trim().to_string();   
+=======
         let mut model: String = String::new();
 
         if let Some(Ok(line)) = lines.next() {
             model = line.split(':').nth(1).expect("Failed to parse CPU Info").trim().to_string();
+>>>>>>> 8afde3292bdd5b9f673658918a3b57b8237d85fd
         }
 
         println!("┘ CPU: {}", Purple.paint(model));
@@ -153,5 +169,6 @@ fn main() {
     }
 
     // Colours
-    println!("\n{} {} {} {} {} {}", Red.paint("◆"), Green.paint("◆"), Yellow.paint("◆"), Blue.paint("◆"), Purple.paint("◆"), Cyan.paint("◆"));
+   println!("\n{} {} {} {} {} {}", Red.paint("◆"), Green.paint("◆"), Yellow.paint("◆"), Blue.paint("◆"), Purple.paint("◆"), Cyan.paint("◆"));
+    
 }
