@@ -18,6 +18,8 @@ fn main() {
     //     .output()
     //     .expect("Failed to get hostname");
 
+
+
    // let hostname = String::from_utf8_lossy(&hostname.stdout);
     let user = env::var("USER");
     
@@ -149,20 +151,11 @@ fn main() {
             i += 1;
 
         }
-
-<<<<<<< HEAD
-        
-        let mut model: String = String::new();
-
-        if let Some(Ok(line)) = lines.next() {
-            model = line.split(':').nth(1).expect("Failed to parse CPU Info").trim().to_string();   
-=======
         let mut model: String = String::new();
 
         if let Some(Ok(line)) = lines.next() {
             model = line.split(':').nth(1).expect("Failed to parse CPU Info").trim().to_string();
->>>>>>> 8afde3292bdd5b9f673658918a3b57b8237d85fd
-        }
+       }
 
         println!("┘ CPU: {}", Purple.paint(model));
 
