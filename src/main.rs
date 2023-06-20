@@ -10,7 +10,7 @@ fn main() {
     // let user = Command::new("whoami")
     //     .output()
     //     .expect("Failed to get user");
-    
+
     // let user = String::from_utf8_lossy(&user.stdout);
 
     // let hostname = Command::new("uname")
@@ -22,14 +22,14 @@ fn main() {
 
    // let hostname = String::from_utf8_lossy(&hostname.stdout);
     let user = env::var("USER");
-    
+
     let mut hostname = String::new();
     {
         let hostname_file = File::open("/etc/hostname").expect("u forgor the /etc/hostname file u arch-using moronbox");
         let mut hostname_reader = BufReader::new(hostname_file);
         hostname_reader.read_line(&mut hostname).expect("Failed string conversion... EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
     }
-    
+
     // Read release file, AKA get OS name
     let mut release_distro = String::new();
     {
@@ -42,7 +42,7 @@ fn main() {
    let mut distro_name: String = release_distro[5..release_distro.len() - 1].to_string();
    distro_name = distro_name.replace('\"', "");
     // println!("OS: {}", Red.paint(distro_name.clone()));
-    
+
     let figlet = Command::new("figlet")
         .args(["-f", "smslant", &distro_name])
         .output();
@@ -59,7 +59,7 @@ fn main() {
     // I know it's terrible, but it works.
     let mut kernel = String::new();
     {
-        let kernel_file = File::open("/proc/version").expect("do u even linux bro???");
+        let kernel_file = File::open("/proc/version").expect("Read the README.md you dumbass");
         let mut kernel_reader = BufReader::new(kernel_file);
         kernel_reader.read_line(&mut kernel).expect("Failed string conversion");
     }
@@ -81,7 +81,7 @@ fn main() {
         // Vars
         let mut ramtotal: u32 = 0;
         let mut ramavail: u32 = 0;
-        
+
         // Read 1st & 2nd line
         if let Some(Ok(line)) = lines.next() {
             if let Some(idx) = line.find(char::is_whitespace) {
@@ -112,9 +112,9 @@ fn main() {
         let ramused = ramtotal - ramavail;
 
         println!("│ Mem: {}/{} GB ({} GB Available)", Green.paint(ramused.to_string()), Green.paint(ramtotal.to_string()), Green.paint(ramavail.to_string()));
- 
+
     }
-    
+
     {
         // This took me unusually long.
 
@@ -128,16 +128,26 @@ fn main() {
 
         // was never expecting rounding to be this difficult
         let uptimeint = uptime.parse::<f32>();
-        let roundeduptimeint: u32 = uptimeint.expect("phoque").round() as u32; 
+        let roundeduptimeint: u32 = uptimeint.expect("phoque").round() as u32;
         let uptimemins: u32 = roundeduptimeint / 60;
         println!("│ Uptime: {} minutes", Blue.paint(uptimemins.to_string()))
 
     }
-    
-    // Get shell
-    let shell = env::var("SHELL").expect("Could not read $SHELL variable");
-    println!("│ Shell: {}", Cyan.paint(shell));
 
+    // Get shell
+    let shell_raw = env::var("SHELL").expect("Could not read $SHELL variable");
+
+    // Split the path using '/' as the separator
+    // Thanks ChatGPT
+    let parts: Vec<&str> = shell_raw.rsplitn(2, '/').collect();
+
+    // Check if the path contains at least one '/'
+    if parts.len() > 1 {
+        let shell = parts[0];
+        println!("│ Shell: {}", Cyan.paint(shell));
+    } else {
+        println!("Invalid path format.");
+    }
     // Time for a challenge, Get CPU model!
     {
         let file = File::open("/proc/cpuinfo").expect("Could not read /proc/cpuinfo");
@@ -163,5 +173,5 @@ fn main() {
 
     // Colours
    println!("\n{} {} {} {} {} {}", Red.paint("◆"), Green.paint("◆"), Yellow.paint("◆"), Blue.paint("◆"), Purple.paint("◆"), Cyan.paint("◆"));
-    
+
 }

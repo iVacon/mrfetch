@@ -18,6 +18,10 @@ sudo pacman -S rustup git figlet
 ```bash
 sudo apt install rustup git figlet
 ```
+- NixOS
+```bash
+sudo nix-env -iA nixos.rustup nixos.git nixos.figlet
+```
 If you don't want to install figlet (for the ASCII logo) then you can remove "figlet" from the end of both commands. I'm working on removing figlet from the dependency list alltogether, and packaging the logos in the program, however that would require a lot of testing (likely involving VMs).
 
 ## 2. Clone the repository:
