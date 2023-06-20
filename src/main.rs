@@ -42,6 +42,13 @@ fn main() {
    let mut distro_name: String = release_distro[5..release_distro.len() - 1].to_string();
    distro_name = distro_name.replace('\"', "");
     // println!("OS: {}", Red.paint(distro_name.clone()));
+    
+   // Quick fix for NixOS
+   // I know I should change the way the program gets the distro, but I haven't been able to find a
+   // fix that doesn't rely on other crates or libraries.
+   if distro_name == "EPORT_URL=https://github.com/NixOS/nixpkgs/issues" {
+    distro_name = "NixOS".to_string();
+   }
 
     let figlet = Command::new("figlet")
         .args(["-f", "smslant", &distro_name])
