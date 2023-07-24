@@ -16,8 +16,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - uses: cachix/install-nix-action@v22
+    
     - name: Build release
       run: cargo build --release --verbose
+      
+    - name: NixOS Build
+      run: nix-shell -p crate2nix --command "crate2nix generate"
       
     - name: Automatic Releases
       uses: marvinpinto/action-automatic-releases@v1.2.1
@@ -27,7 +32,9 @@ jobs:
         # Release title (for automatic releases)
         title: Automatic release
         # Assets to upload to the release
-        files: target/release/mrfetch 
+        files: |
+          target/release/mrfetch
+          Cargo.nix
         # Git tag
         automatic_release_tag: AUTO
         # Prerelease
